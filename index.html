@@ -4,6 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🏒 Roosan veikkaukset – Kevyt</title>
+
+  <meta name="theme-color" content="#0f172a">
+
+  <!-- ✅ Oikeat polut GitHub Pages -alihakemistoon -->
+  <link rel="manifest" href="/roosa/manifest.json">
+  <link rel="icon" href="/roosa/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/roosa/icons/apple-touch-icon.png">
+
   <style>
     :root{--bg:#f7f7fb;--card:#fff;--text:#111827;--muted:#6b7280;--border:#e5e7eb}
     html,body{margin:0;padding:0}
@@ -22,49 +30,135 @@
     .btn{background:#f97316;color:#fff;border:none;border-radius:10px;padding:10px 12px;font-weight:700;cursor:pointer}
     .muted{color:var(--muted);font-size:12px;text-align:center;margin-top:8px}
   </style>
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#0f172a">
-<link rel="icon" href="/icons/icon-192.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+
 </head>
 <body>
   <h1>🏒 Roosan veikkaukset</h1>
+
   <div class="card">
     <div class="person-title">Roosa</div>
     <div id="cardArea" class="kv"></div>
     <div class="row-end"><button id="resetBtn" class="btn">Tyhjennä lomake</button></div>
     <p class="muted">Tiedot tallentuvat tähän laitteeseen (localStorage).</p>
   </div>
+
 <script>
 const FIELDS=[
-{key:'lopputulos',label:'Lopputulos'},{key:'ekan_maalintekija',label:'Ekan maalintekijä'},{key:'ekan_maali_aika',label:'Ekan maalin tekoaika'},
-{key:'ekan_jahyn_saaja',label:'Ekan jäähyn saaja'},{key:'ekan_jahyn_syy',label:'Ekan jäähyn syy'},{key:'montako_jahyja',label:'Montako jäähyä'},
-{key:'parempi_laukasu',label:'Kummalla parempi laukaus%'},{key:'parempi_alotus',label:'Kummalla parempi aloitus%'},{key:'parempi_torjunta',label:'Kummalla parempi torjunta%'},
-{key:'parempi_alivoima',label:'Kummalla parempi alivoima%'},{key:'parempi_ylivoima',label:'Kummalla parempi ylivoima%'},{key:'era1',label:'1. erä tulos'},{key:'era2',label:'2. erä tulos'},
-{key:'valmentaja_haasto',label:'Valmentaja haasto'},{key:'maali_tyhjiin',label:'Maali tyhjiin'}
+{key:'lopputulos',label:'Lopputulos'},
+{key:'ekan_maalintekija',label:'Ekan maalintekijä'},
+{key:'ekan_maali_aika',label:'Ekan maalin tekoaika'},
+{key:'ekan_jahyn_saaja',label:'Ekan jäähyn saaja'},
+{key:'ekan_jahyn_syy',label:'Ekan jäähyn syy'},
+{key:'montako_jahyja',label:'Montako jäähyä'},
+{key:'parempi_laukasu',label:'Kummalla parempi laukaus%'},
+{key:'parempi_alotus',label:'Kummalla parempi aloitus%'},
+{key:'parempi_torjunta',label:'Kummalla parempi torjunta%'},
+{key:'parempi_alivoima',label:'Kummalla parempi alivoima%'},
+{key:'parempi_ylivoima',label:'Kummalla parempi ylivoima%'},
+{key:'era1',label:'1. erä tulos'},
+{key:'era2',label:'2. erä tulos'},
+{key:'valmentaja_haasto',label:'Valmentaja haasto'},
+{key:'maali_tyhjiin',label:'Maali tyhjiin'}
 ];
+
 const ONE_X_TWO=new Set(['parempi_laukasu','parempi_alotus','parempi_torjunta','parempi_alivoima','parempi_ylivoima','era1','era2']);
 const KYLLAEI=new Set(['valmentaja_haasto','maali_tyhjiin']);
-const TEXTK=new Set(['ekan_maalintekija','ekan_jahyn_saaja','ekan_jahyn_syy']); const NUMK=new Set(['montako_jahyja']);
-const STORAGE_KEY='turnausveikkaus_single_roosa'; let data=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+const TEXTK=new Set(['ekan_maalintekija','ekan_jahyn_saaja','ekan_jahyn_syy']);
+const NUMK=new Set(['montako_jahyja']);
+
+const STORAGE_KEY='turnausveikkaus_single_roosa';
+let data=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+
 function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}
-function nScore(a,b){const A=(a||'').toString().trim(),B=(b||'').toString().trim(); if(A===''&&B==='')return''; return (A||'0')+'-'+(B||'0');}
-function pScore(s){const m=(s||'').match(/^(\\d+)\\s*[-–]\\s*(\\d+)$/); return m?[m[1],m[2]]:['',''];}
-function pTime(s){const m=(s||'').match(/^(\\d{1,2}):(\\d{2})$/); return m?[m[1].padStart(2,'0'),m[2]]:['',''];}
-function wHTML(k,v){ if(k==='lopputulos'){const ab=pScore(v);return '<div class="score-combo"><input type="number" inputmode="numeric" class="goalA" value="'+ab[0]+'" placeholder="0"/><span class="dash">-</span><input type="number" inputmode="numeric" class="goalB" value="'+ab[1]+'" placeholder="0"/></div>';}
- if(k==='ekan_maali_aika'){const ts=pTime(v);return '<div class="time-combo"><input type="number" inputmode="numeric" class="timeM" value="'+ts[0]+'" placeholder="MM"/><span class="colon">:</span><input type="number" inputmode="numeric" class="timeS" value="'+ts[1]+'" placeholder="SS"/></div>';}
- if(ONE_X_TWO.has(k)){const o=['','1','X','2'];return '<select>'+o.map(x=>'<option value="'+x+'" '+(x===v?'selected':'')+'>'+(x===''?'—':x)+'</option>').join('')+'</select>'; }
- if(KYLLAEI.has(k)){const o=['','Kyllä','Ei'];return '<select>'+o.map(x=>'<option value="'+x+'" '+(x===v?'selected':'')+'>'+(x===''?'—':x)+'</option>').join('')+'</select>'; }
- if(NUMK.has(k)) return '<input type="number" inputmode="numeric" value="'+(v||'')+'" placeholder="0"/>'; 
- return '<input type="text" inputmode="text" value="'+(v||'')+'" placeholder="Kirjoita"/>'; }
-function render(){const wrap=document.getElementById('cardArea'); wrap.innerHTML=FIELDS.map(f=>'<div class="kv-row"><div class="kv-label">'+f.label+'</div>'+wHTML(f.key,(data[f.key]||''))+'</div>').join('');
- wrap.querySelectorAll('.score-combo').forEach(c=>{const A=c.querySelector('.goalA'),B=c.querySelector('.goalB'); function onI(){data['lopputulos']=nScore(A.value,B.value);save();} A.addEventListener('input',onI);B.addEventListener('input',onI);});
- wrap.querySelectorAll('.time-combo').forEach(b=>{const M=b.querySelector('.timeM'),S=b.querySelector('.timeS'); function onI(){const mm=(M.value||'').toString().padStart(2,'0'); const ss=(S.value||'').toString().padStart(2,'0'); data['ekan_maali_aika']=(mm===''&&ss==='')?'':(mm+':'+ss); save();} M.addEventListener('input',onI); S.addEventListener('input',onI);});
- wrap.querySelectorAll('input:not(.goalA):not(.goalB):not(.timeM):not(.timeS),select').forEach(inp=>{const label=inp.closest('.kv-row').querySelector('.kv-label').textContent; const field=(FIELDS.find(x=>x.label===label)||{}).key; if(!field)return; inp.addEventListener('input',e=>{data[field]=e.target.value;save();});});
+
+function nScore(a,b){
+  const A=(a||'').toString().trim(),B=(b||'').toString().trim();
+  if(A===''&&B==='')return'';
+  return (A||'0')+'-'+(B||'0');
 }
-document.getElementById('resetBtn').addEventListener('click',()=>{if(!confirm('Tyhjennetäänkö kaikki tämän lomakkeen tiedot?'))return; data={}; save(); render();});
+
+function pScore(s){
+  const m=(s||'').match(/^(\\d+)\\s*[-–]\\s*(\\d+)$/);
+  return m?[m[1],m[2]]:['',''];
+}
+
+function pTime(s){
+  const m=(s||'').match(/^(\\d{1,2}):(\\d{2})$/);
+  return m?[m[1].padStart(2,'0'),m[2]]:['',''];
+}
+
+function wHTML(k,v){
+  if(k==='lopputulos'){
+    const ab=pScore(v);
+    return '<div class="score-combo"><input type="number" class="goalA" value="'+ab[0]+'"/><span class="dash">-</span><input type="number" class="goalB" value="'+ab[1]+'"/></div>';
+  }
+  if(k==='ekan_maali_aika'){
+    const t=pTime(v);
+    return '<div class="time-combo"><input type="number" class="timeM" value="'+t[0]+'"/><span class="colon">:</span><input type="number" class="timeS" value="'+t[1]+'"/></div>';
+  }
+  if(ONE_X_TWO.has(k)){
+    const o=['','1','X','2'];
+    return '<select>'+o.map(x=>'<option '+(x===v?'selected':'')+'>'+x+'</option>').join('')+'</select>';
+  }
+  if(KYLLAEI.has(k)){
+    const o=['','Kyllä','Ei'];
+    return '<select>'+o.map(x=>'<option '+(x===v?'selected':'')+'>'+x+'</option>').join('')+'</select>';
+  }
+  if(NUMK.has(k)){
+    return '<input type="number" value="'+(v||'')+'">';
+  }
+  return '<input type="text" value="'+(v||'')+'">';
+}
+
+function render(){
+  const wrap=document.getElementById('cardArea');
+  wrap.innerHTML=FIELDS.map(f=>'<div class="kv-row"><div class="kv-label">'+f.label+'</div>'+wHTML(f.key,data[f.key]||'')+'</div>').join('');
+
+  wrap.querySelectorAll('.goalA,.goalB').forEach(inp=>{
+    inp.addEventListener('input',()=>{
+      const row=inp.closest('.score-combo');
+      const A=row.querySelector('.goalA').value;
+      const B=row.querySelector('.goalB').value;
+      data.lopputulos=nScore(A,B);
+      save();
+    });
+  });
+
+  wrap.querySelectorAll('.timeM,.timeS').forEach(inp=>{
+    inp.addEventListener('input',()=>{
+      const row=inp.closest('.time-combo');
+      const M=row.querySelector('.timeM').value.padStart(2,'0');
+      const S=row.querySelector('.timeS').value.padStart(2,'0');
+      data.ekan_maali_aika=M+':'+S;
+      save();
+    });
+  });
+
+  wrap.querySelectorAll('input:not(.goalA):not(.goalB):not(.timeM):not(.timeS),select').forEach(inp=>{
+    const label=inp.closest('.kv-row').querySelector('.kv-label').textContent;
+    const field=FIELDS.find(x=>x.label===label).key;
+    inp.addEventListener('input',()=>{
+      data[field]=inp.value;
+      save();
+    });
+  });
+}
+
+document.getElementById('resetBtn').addEventListener('click',()=>{
+  if(!confirm('Tyhjennetäänkö kaikki tämän lomakkeen tiedot?'))return;
+  data={};
+  save();
+  render();
+});
+
 render();
 </script>
-<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js")}</script>
+
+<script>
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("/roosa/sw.js");
+}
+</script>
+
 </body>
 </html>
