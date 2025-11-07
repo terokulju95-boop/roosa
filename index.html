@@ -5,170 +5,169 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>🏒 Roosan veikkaukset – Kevyt</title>
 
+  <!-- PWA / ikonit (GitHub Pages -alihakemistoon) -->
   <meta name="theme-color" content="#0f172a">
   <link rel="manifest" href="/roosa/manifest.json">
   <link rel="icon" href="/roosa/icons/icon-192.png">
   <link rel="apple-touch-icon" href="/roosa/icons/apple-touch-icon.png">
 
   <style>
+    /* ---------- Teemat ---------- */
     :root{
       --bg:#f7f7fb; --card:#fff; --text:#111827; --muted:#6b7280; --border:#e5e7eb;
       --btn:#f97316; --btn-hover:#ea580c; --info:#0ea5e9;
-      --green:#22c55e; --red:#ef4444;
+      --success:#22c55e; --success-hover:#16a34a;
+      --danger:#ef4444; --danger-hover:#dc2626;
     }
     [data-theme="dark"]{
       --bg:#0b1020; --card:#111727; --text:#e5e7eb; --muted:#9aa3b2; --border:#243047;
       --btn:#fb8a3c; --btn-hover:#ec6f17; --info:#38bdf8;
-      --green:#4ade80; --red:#f87171;
+      --success:#22c55e; --success-hover:#16a34a;
+      --danger:#ef4444; --danger-hover:#dc2626;
     }
 
-    *{ box-sizing:border-box; }
-
+    /* ---------- Perustyyli + leveyslukitus ---------- */
+    *{ box-sizing:border-box }
+    html,body{ margin:0; padding:0 }
     body{
-      margin:0; padding:12px; background:var(--bg); color:var(--text);
-      font-family:system-ui, Segoe UI, sans-serif;
+      min-height:100svh;
+      display:flex; justify-content:center; /* keskitys vaakasuunnassa */
+      background:var(--bg); color:var(--text);
+      font-family:system-ui, Segoe UI, Roboto, Arial, sans-serif; line-height:1.45;
+    }
+    .app{
+      width:100%;
+      max-width:520px;             /* 🔒 lukitaan “yhden ruudun” leveys */
+      padding:12px;                /* reunaetäisyys */
     }
 
-    h1{ text-align:center; font-size:22px; margin:8px 0 14px; }
+    h1{ text-align:center; margin:0 0 10px; font-size:20px }
 
-    .topbar{
-      display:flex; justify-content:flex-end; max-width:480px;
-      margin:0 auto 10px; padding:0 4px;
-    }
+    .topbar{ display:flex; justify-content:flex-end; align-items:center; gap:8px; margin-bottom:8px }
     .toggle{
-      background:transparent; border:1px solid var(--border);
-      padding:6px 10px; border-radius:999px; color:var(--text); font-weight:700;
-      cursor:pointer;
+      background:transparent; border:1px solid var(--border); color:var(--text);
+      padding:6px 10px; border-radius:999px; cursor:pointer; font-weight:700;
+      transition:transform .15s ease;
     }
+    .toggle:active{ transform:scale(0.98) }
 
-    /* ✅ KORTTI EI ENÄÄ LEVENE YLI RUUDUN */
     .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:12px;
-      padding:10px;
-      max-width:480px;         /* <- tämä estää ylivuodon */
-      width:100%;              /* <- kortti käyttää 100% tilasta */
-      margin:0 auto;
+      background:var(--card); border:1px solid var(--border); border-radius:12px;
+      padding:10px; margin:0 auto;
+      animation: enter .35s ease-out both;    /* 🔥 sisääntuloanimaatio kortille */
     }
 
-    .person-title{
-      font-weight:800; text-align:center; font-size:16px; margin-bottom:8px;
-    }
-
-    /* ✅ RESPONSIVE GRID – ei valu yli */
-    .kv{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:6px;
-    }
-
+    .person-title{ font-weight:800; margin-bottom:8px; font-size:16px; text-align:center }
+    .kv{ display:grid; grid-template-columns:1fr; gap:6px }
     .kv-row{
-      display:grid;
-      grid-template-columns:minmax(90px, 140px) 1fr; /* <- mukautuva leveys */
-      gap:8px;
-      align-items:center;
-      width:100%;
+      display:grid; grid-template-columns:120px 1fr; gap:8px; align-items:center;
+      animation: rowIn .35s ease-out both;    /* 🔥 rivikohtainen sisäänfade */
     }
+    .kv-row:nth-child(1){ animation-delay:.02s }
+    .kv-row:nth-child(2){ animation-delay:.04s }
+    .kv-row:nth-child(3){ animation-delay:.06s }
+    .kv-row:nth-child(4){ animation-delay:.08s }
+    .kv-row:nth-child(5){ animation-delay:.10s }
+    .kv-row:nth-child(6){ animation-delay:.12s }
+    .kv-row:nth-child(7){ animation-delay:.14s }
+    .kv-row:nth-child(8){ animation-delay:.16s }
+    .kv-row:nth-child(9){ animation-delay:.18s }
+    .kv-row:nth-child(10){ animation-delay:.20s }
+    .kv-row:nth-child(11){ animation-delay:.22s }
+    .kv-row:nth-child(12){ animation-delay:.24s }
+    .kv-row:nth-child(13){ animation-delay:.26s }
+    .kv-row:nth-child(14){ animation-delay:.28s }
+    .kv-row:nth-child(15){ animation-delay:.30s }
 
-    .kv-label{
-      font-size:13px; font-weight:600;
-      white-space:normal;
-      word-break:break-word;
+    .kv-label{ font-weight:600; font-size:13px }
+    input,select{
+      width:100%; padding:9px 10px; border:1px solid var(--border);
+      border-radius:10px; font-size:16px; background:#fff; color:#111;
     }
-
-    /* Tekstikentät */
-    input, select{
-      width:100%;
-      padding:9px 10px;
-      border:1px solid var(--border);
-      border-radius:10px;
-      font-size:16px;
-      background:#fff;
-      color:#111;
-    }
-    [data-theme="dark"] input,
-    [data-theme="dark"] select{
+    [data-theme="dark"] input,[data-theme="dark"] select{
       background:#0f1525; color:#e5e7eb; border-color:#2a3651;
     }
 
-    /* Tulokset */
-    .score-combo, .time-combo{
-      display:flex; gap:6px; align-items:center;
-    }
-    .score-combo input, .time-combo input{
-      width:56px; text-align:center;
-    }
-    .dash, .colon{ font-weight:800; }
+    .score-combo,.time-combo{ display:flex; align-items:center; gap:6px }
+    .score-combo input,.time-combo input{ width:56px; text-align:center }
+    .dash,.colon{ font-weight:800 }
 
-    /* Nappirivi */
-    .row-end{
-      display:flex; justify-content:space-between; gap:10px;
-      margin-top:10px; flex-wrap:wrap;
-    }
-
-    /* Napit */
+    .row-end{ display:flex; justify-content:space-between; gap:8px; margin-top:10px; flex-wrap:wrap }
     .btn{
-      padding:10px 12px;
-      border:none; border-radius:10px;
-      color:#fff; font-weight:700;
-      cursor:pointer;
-      flex:1;
-      text-align:center;
+      background:var(--btn); color:#fff; border:none; border-radius:10px;
+      padding:10px 12px; font-weight:700; cursor:pointer;
+      transition: transform .12s ease, background .15s ease, box-shadow .2s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,.06);
     }
-    .btn-green{ background:var(--green); }
-    .btn-red{ background:var(--red); }
-    .btn-info{ background:var(--info); }
+    .btn:hover{ background:var(--btn-hover) }
+    .btn:active{ transform: translateY(1px) }   /* 🔥 kevyt painallusanimaatio */
 
-    .muted{
-      color:var(--muted); font-size:12px;
-      margin-top:8px; text-align:center;
+    .btn-success{ background:var(--success) }
+    .btn-success:hover{ background:var(--success-hover) }
+
+    .btn-danger{ background:var(--danger) }
+    .btn-danger:hover{ background:var(--danger-hover) }
+
+    .muted{ color:var(--muted); font-size:12px; text-align:center; margin-top:8px }
+
+    /* ---------- Animaatioavaimet ---------- */
+    @keyframes enter{
+      from{ opacity:0; transform: translateY(6px) }
+      to{ opacity:1; transform: translateY(0) }
+    }
+    @keyframes rowIn{
+      from{ opacity:0; transform: translateY(4px) }
+      to{ opacity:1; transform: translateY(0) }
     }
   </style>
 </head>
-
 <body>
-
-  <div class="topbar">
-    <button id="themeToggle" class="toggle">🌙 / ☀️</button>
-  </div>
-
-  <h1>🏒 Roosan veikkaukset</h1>
-
-  <div class="card" id="cardCapture">
-    <div class="person-title">Roosa</div>
-    <div id="cardArea" class="kv"></div>
-
-    <div class="row-end">
-      <button id="resetBtn" class="btn btn-red">Tyhjennä</button>
-      <button id="shareToTeroBtn" class="btn btn-green">Lähetä Terolle ✅</button>
+  <div class="app">
+    <!-- Manuaalinen teemanvaihto (automaattinen toimii taustalla) -->
+    <div class="topbar">
+      <button id="themeToggle" class="toggle" aria-label="Vaihda teema">🌙 / ☀️</button>
     </div>
 
-    <p class="muted">Tiedot tallentuvat tähän laitteeseen.</p>
+    <h1>🏒 Roosan veikkaukset</h1>
+
+    <div class="card" id="cardCapture">
+      <div class="person-title">Roosa</div>
+      <div id="cardArea" class="kv"></div>
+
+      <div class="row-end">
+        <button id="resetBtn" class="btn btn-danger">Tyhjennä lomake</button>
+        <button id="shareToTeroBtn" class="btn btn-success" title="Lähetä WhatsAppilla Terolle">Lähetä Terolle</button>
+      </div>
+
+      <p class="muted">Tiedot tallentuvat tähän laitteeseen (localStorage).</p>
+    </div>
   </div>
 
   <script>
-    /* TEEMAN VAIHTO (sama kuin aiemmin) */
-    const THEME_KEY='roosa_theme';
-    const prefersDark=window.matchMedia('(prefers-color-scheme: dark)');
+    /* ---------- Automaattinen & manuaalinen teema ---------- */
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const THEME_KEY = 'roosa_theme';
     function applyTheme(mode){
-      if(mode==='dark'){ document.documentElement.setAttribute('data-theme','dark'); }
-      else if(mode==='light'){ document.documentElement.setAttribute('data-theme','light'); }
-      else{
+      if(!mode || mode==='auto'){
         document.documentElement.removeAttribute('data-theme');
-        if(prefersDark.matches) document.documentElement.setAttribute('data-theme','dark');
+        if(prefersDark.matches){ document.documentElement.setAttribute('data-theme','dark'); }
+      }else{
+        document.documentElement.setAttribute('data-theme', mode);
       }
-      localStorage.setItem(THEME_KEY, mode);
+      localStorage.setItem(THEME_KEY, mode || 'auto');
     }
     applyTheme(localStorage.getItem(THEME_KEY)||'auto');
-    document.getElementById('themeToggle').onclick=()=>{
-      const m=localStorage.getItem(THEME_KEY)||'auto';
-      applyTheme(m==='dark'?'light':'dark');
-    };
+    prefersDark.addEventListener?.('change',()=>applyTheme(localStorage.getItem(THEME_KEY)||'auto'));
+    document.getElementById('themeToggle').addEventListener('click',()=>{
+      const cur = localStorage.getItem(THEME_KEY)||'auto';
+      const next = cur==='auto' ? (document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')
+                  : (cur==='dark'?'light':'auto');
+      applyTheme(next);
+    });
   </script>
 
   <script>
-    /* LOMAKE (sama logiikka kuin aiemmin, ei muutoksia) */
+    /* ---------- Lomake ---------- */
     const FIELDS=[
       {key:'lopputulos',label:'Lopputulos'},
       {key:'ekan_maalintekija',label:'Ekan maalintekijä'},
@@ -186,9 +185,9 @@
       {key:'valmentaja_haasto',label:'Valmentaja haasto'},
       {key:'maali_tyhjiin',label:'Maali tyhjiin'}
     ];
-
     const ONE_X_TWO=new Set(['parempi_laukasu','parempi_alotus','parempi_torjunta','parempi_alivoima','parempi_ylivoima','era1','era2']);
     const KYLLAEI=new Set(['valmentaja_haasto','maali_tyhjiin']);
+    const TEXTK=new Set(['ekan_maalintekija','ekan_jahyn_saaja','ekan_jahyn_syy']);
     const NUMK=new Set(['montako_jahyja']);
 
     const STORAGE_KEY='turnausveikkaus_single_roosa';
@@ -196,105 +195,109 @@
     function save(){ localStorage.setItem(STORAGE_KEY,JSON.stringify(data)); }
 
     function nScore(a,b){
-      if(a===''&&b==='')return'';
-      return (a||'0')+'-'+(b||'0');
+      const A=(a||'').toString().trim(),B=(b||'').toString().trim();
+      if(A===''&&B==='')return'';
+      return (A||'0')+'-'+(B||'0');
     }
-    function pScore(s){ const m=(s||'').match(/^(\d+)-(\d+)$/); return m?[m[1],m[2]]:['','']; }
-    function pTime(s){ const m=(s||'').match(/^(\d{1,2}):(\d{2})$/); return m?[m[1],m[2]]:['','']; }
+    function pScore(s){
+      const m=(s||'').match(/^(\d+)\s*[-–]\s*(\d+)$/);
+      return m?[m[1],m[2]]:['',''];
+    }
+    function pTime(s){
+      const m=(s||'').match(/^(\d{1,2}):(\d{2})$/);
+      return m?[m[1].padStart(2,'0'),m[2]]:['',''];
+    }
 
     function wHTML(k,v){
       if(k==='lopputulos'){
-        const [A,B]=pScore(v);
-        return `<div class="score-combo">
-                  <input type="number" class="goalA" value="${A}">
-                  <span class="dash">-</span>
-                  <input type="number" class="goalB" value="${B}">
-                </div>`;
+        const ab=pScore(v);
+        return '<div class="score-combo"><input type="number" inputmode="numeric" class="goalA" value="'+ab[0]+'"/><span class="dash">-</span><input type="number" inputmode="numeric" class="goalB" value="'+ab[1]+'"/></div>';
       }
       if(k==='ekan_maali_aika'){
-        const [M,S]=pTime(v);
-        return `<div class="time-combo">
-                  <input class="timeM" type="number" value="${M}">
-                  <span class="colon">:</span>
-                  <input class="timeS" type="number" value="${S}">
-                </div>`;
+        const t=pTime(v);
+        return '<div class="time-combo"><input type="number" inputmode="numeric" class="timeM" value="'+t[0]+'"/><span class="colon">:</span><input type="number" inputmode="numeric" class="timeS" value="'+t[1]+'"/></div>';
       }
       if(ONE_X_TWO.has(k)){
         const o=['','1','X','2'];
-        return `<select>${o.map(x=>`<option ${x===v?'selected':''}>${x}</option>`).join('')}</select>`;
+        return '<select>'+o.map(x=>'<option '+(x===v?'selected':'')+'>'+x+'</option>').join('')+'</select>';
       }
       if(KYLLAEI.has(k)){
         const o=['','Kyllä','Ei'];
-        return `<select>${o.map(x=>`<option ${x===v?'selected':''}>${x}</option>`).join('')}</select>`;
+        return '<select>'+o.map(x=>'<option '+(x===v?'selected':'')+'>'+x+'</option>').join('')+'</select>';
       }
       if(NUMK.has(k)){
-        return `<input type="number" value="${v||''}">`;
+        return '<input type="number" inputmode="numeric" value="'+(v||'')+'">';
       }
-      return `<input type="text" value="${v||''}">`;
+      return '<input type="text" value="'+(v||'')+'">';
     }
 
     function render(){
-      const wrap=document.getElementById("cardArea");
-      wrap.innerHTML = FIELDS.map(f =>
-        `<div class="kv-row"><div class="kv-label">${f.label}</div>${wHTML(f.key,data[f.key]||"")}</div>`
-      ).join("");
+      const wrap=document.getElementById('cardArea');
+      wrap.innerHTML=FIELDS.map(f=>'<div class="kv-row"><div class="kv-label">'+f.label+'</div>'+wHTML(f.key,data[f.key]||'')+'</div>').join('');
 
       wrap.querySelectorAll('.goalA,.goalB').forEach(inp=>{
-        inp.oninput=()=>{
+        inp.addEventListener('input',()=>{
           const row=inp.closest('.score-combo');
-          data.lopputulos=nScore(row.querySelector('.goalA').value,row.querySelector('.goalB').value);
+          const A=row.querySelector('.goalA').value;
+          const B=row.querySelector('.goalB').value;
+          data.lopputulos=nScore(A,B);
           save();
-        };
+        });
       });
 
       wrap.querySelectorAll('.timeM,.timeS').forEach(inp=>{
-        inp.oninput=()=>{
+        inp.addEventListener('input',()=>{
           const row=inp.closest('.time-combo');
-          data.ekan_maali_aika=row.querySelector('.timeM').value+":"+row.querySelector('.timeS').value;
+          const M=(row.querySelector('.timeM').value||'').toString().padStart(2,'0');
+          const S=(row.querySelector('.timeS').value||'').toString().padStart(2,'0');
+          data.ekan_maali_aika=(M===''&&S==='')?'':(M+':'+S);
           save();
-        };
+        });
       });
 
-      wrap.querySelectorAll('select,input:not(.goalA):not(.goalB):not(.timeM):not(.timeS)').forEach(inp=>{
-        inp.oninput=()=>{
-          const field=FIELDS.find(x=>x.label===inp.closest('.kv-row').querySelector('.kv-label').textContent).key;
+      wrap.querySelectorAll('input:not(.goalA):not(.goalB):not(.timeM):not(.timeS),select').forEach(inp=>{
+        const label=inp.closest('.kv-row').querySelector('.kv-label').textContent;
+        const field=FIELDS.find(x=>x.label===label).key;
+        inp.addEventListener('input',()=>{
           data[field]=inp.value;
           save();
-        };
+        });
       });
     }
 
-    document.getElementById("resetBtn").onclick=()=>{
-      if(confirm("Tyhjennetäänkö kaikki tiedot?")){
-        data={}; save(); render();
-      }
-    };
+    document.getElementById('resetBtn').addEventListener('click',()=>{
+      if(!confirm('Tyhjennetäänkö kaikki tämän lomakkeen tiedot?'))return;
+      data={}; save(); render();
+    });
 
     render();
   </script>
 
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
+  <!-- html2canvas poistettu – ei tarvita kun lähetetään suoraan -->
   <script>
-    /* LÄHETÄ TEROLLE */
-    const WHATSAPP_NUMBER="358405268017";
+    /* ---------- Lähetys Terolle ---------- */
+    const WHATSAPP_NUMBER = '358405268017'; // Tero
 
-    document.getElementById("shareToTeroBtn").onclick=async()=>{
-      const card=document.getElementById("cardCapture");
-      const canvas=await html2canvas(card,{scale:3,backgroundColor:null});
+    document.getElementById("shareToTeroBtn").addEventListener("click", async function () {
+      // Rakennetaan lyhyt tekstiyhteenveto veikkauksista
+      const rows = Array.from(document.querySelectorAll('.kv-row')).map(r=>{
+        const label = r.querySelector('.kv-label')?.textContent?.trim()||'';
+        const input = r.querySelector('input,select');
+        const val = input ? (input.value||'').toString().trim() : '';
+        return `${label}: ${val}`;
+      }).join('\n');
 
-      canvas.toBlob(async(blob)=>{
-        const file=new File([blob],"roosa_veikkaus.png",{type:"image/png"});
-        const shareData={ files:[file], text:"Roosan veikkaus", title:"Roosa" };
-
-        if(navigator.canShare && navigator.canShare(shareData)){
-          await navigator.share(shareData).catch(()=>{});
-          return;
-        }
-        window.location.href=`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Roosan veikkaus – liitä kuva mukaan")}`;
-      });
-    };
+      const text = encodeURIComponent(`Roosan veikkaukset:\n\n${rows}`);
+      const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
+      window.location.href = waUrl;
+    });
   </script>
 
+  <script>
+    // PWA SW
+    if("serviceWorker" in navigator){
+      navigator.serviceWorker.register("/roosa/sw.js");
+    }
+  </script>
 </body>
 </html>
