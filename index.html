@@ -7,7 +7,6 @@
 
   <meta name="theme-color" content="#0f172a">
 
-  <!-- ✅ Oikeat polut GitHub Pages -alihakemistoon -->
   <link rel="manifest" href="/roosa/manifest.json">
   <link rel="icon" href="/roosa/icons/icon-192.png">
   <link rel="apple-touch-icon" href="/roosa/icons/apple-touch-icon.png">
@@ -26,19 +25,23 @@
     .score-combo,.time-combo{display:flex;align-items:center;gap:6px}
     .score-combo input,.time-combo input{width:56px;text-align:center}
     .dash,.colon{font-weight:800}
-    .row-end{display:flex;justify-content:flex-end;margin-top:10px}
+    .row-end{display:flex;justify-content:space-between;margin-top:10px}
     .btn{background:#f97316;color:#fff;border:none;border-radius:10px;padding:10px 12px;font-weight:700;cursor:pointer}
     .muted{color:var(--muted);font-size:12px;text-align:center;margin-top:8px}
   </style>
-
 </head>
 <body>
   <h1>🏒 Roosan veikkaukset</h1>
 
-  <div class="card">
+  <div class="card" id="cardCapture">
     <div class="person-title">Roosa</div>
     <div id="cardArea" class="kv"></div>
-    <div class="row-end"><button id="resetBtn" class="btn">Tyhjennä lomake</button></div>
+
+    <div class="row-end">
+      <button id="resetBtn" class="btn">Tyhjennä lomake</button>
+      <button id="screenshotBtn" class="btn" style="background:#0ea5e9">Ota kuva</button>
+    </div>
+
     <p class="muted">Tiedot tallentuvat tähän laitteeseen (localStorage).</p>
   </div>
 
@@ -152,6 +155,23 @@ document.getElementById('resetBtn').addEventListener('click',()=>{
 });
 
 render();
+</script>
+
+<!-- ✅ html2canvas kirjasto -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<!-- ✅ Screenshot-toiminto -->
+<script>
+document.getElementById("screenshotBtn").addEventListener("click", function () {
+  const card = document.getElementById("cardCapture");
+
+  html2canvas(card, { scale: 3 }).then(canvas => {
+    const link = document.createElement("a");
+    link.download = "roosa_veikkaus.png";
+    link.href = canvas.toDataURL();
+    link.click();
+  });
+});
 </script>
 
 <script>
