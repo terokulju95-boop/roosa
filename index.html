@@ -240,6 +240,38 @@
       overflow: hidden;
     }
 
+    /* Solid background for screenshot */
+    .card.capturing {
+      background: #ffffff !important;
+      backdrop-filter: none !important;
+      border: 2px solid #e5e7eb !important;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    [data-theme="dark"] .card.capturing {
+      background: #1e293b !important;
+      border: 2px solid #334155 !important;
+      color: #f1f5f9 !important;
+    }
+
+    .card.capturing * {
+      backdrop-filter: none !important;
+    }
+
+    .card.capturing input,
+    .card.capturing select {
+      background: #f8fafc !important;
+      border: 2px solid #e2e8f0 !important;
+      color: #0f172a !important;
+    }
+
+    [data-theme="dark"] .card.capturing input,
+    [data-theme="dark"] .card.capturing select {
+      background: #0f172a !important;
+      border: 2px solid #475569 !important;
+      color: #f1f5f9 !important;
+    }
+
     .card::before {
       content: '';
       position: absolute;
@@ -667,46 +699,59 @@
     document.getElementById("shareToTeroBtn").onclick=async()=>{
       const btn = document.getElementById("shareToTeroBtn");
       const originalText = btn.innerHTML;
-      btn.innerHTML = '⏳ Luodaan kuvaa...';
+      btn.innerHTML = '⏳ Luodaan...';
       btn.disabled = true;
 
-      const card=document.getElementById("cardCapture");
+      const card = document.getElementById("cardCapture");
       
       // Piilota painikkeet ja tallennusilmoitus kuvasta
       const rowEnd = card.querySelector('.row-end');
       const muted = card.querySelector('.muted');
       rowEnd.style.display = 'none';
       muted.style.display = 'none';
+      
+      // Lisää solid background capture-tilaan
+      card.classList.add('capturing');
+
+      // Odota hetki että tyylit päivittyvät
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       try {
-        const canvas=await html2canvas(card, {
-          scale: 3,
-          backgroundColor: '#ffffff',
+        const canvas = await html2canvas(card, {
+          scale: 2,
+          backgroundColor: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#ffffff',
           useCORS: true,
           allowTaint: true,
           logging: false,
-          windowWidth: card.scrollWidth,
-          windowHeight: card.scrollHeight
+          removeContainer: true
         });
 
-        // Näytä painikkeet takaisin
+        // Palauta alkuperäinen tyyli
+        card.classList.remove('capturing');
         rowEnd.style.display = '';
         muted.style.display = '';
         btn.innerHTML = originalText;
         btn.disabled = false;
 
         canvas.toBlob(async(blob)=>{
-          const file=new File([blob],"veikkaus.png",{type:"image/png"});
-          const shareData={ files:[file], text:"Veikkauskortti", title:"Veikkaus" };
+          const file = new File([blob], "veikkaus.png", {type: "image/png"});
+          const shareData = { files: [file], text: "Veikkauskortti", title: "Veikkaus" };
 
           if(navigator.canShare && navigator.canShare(shareData)){
-            await navigator.share(shareData).catch(()=>{});
+            try {
+              await navigator.share(shareData);
+            } catch(err) {
+              if(err.name !== 'AbortError') {
+                window.location.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Veikkaus – liitä kuva mukaan")}`;
+              }
+            }
             return;
           }
-          window.location.href=`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Veikkaus – liitä kuva mukaan")}`;
-        });
+          window.location.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Veikkaus – liitä kuva mukaan")}`;
+        }, 'image/png', 1.0);
       } catch(err) {
         console.error('Virhe kuvan luonnissa:', err);
+        card.classList.remove('capturing');
         rowEnd.style.display = '';
         muted.style.display = '';
         btn.innerHTML = originalText;
